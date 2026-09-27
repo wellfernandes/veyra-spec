@@ -258,8 +258,8 @@ The project documentation is divided into two complementary areas:
         domain-model.md              0001-domain-model.md
         state.md                     0002-specification-format.md
         event.md                     0003-trace-model.md
-        transition.md                0004-trace-model.md
-        trace.md                     0004-validation-engine.md
+        transition.md                0004-validation-engine.md
+        trace.md
         violation.md
         specification.md
         action.md
