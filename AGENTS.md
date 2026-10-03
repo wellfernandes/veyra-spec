@@ -15,13 +15,15 @@ Validation    = comparison
 Violation     = behavioral divergence
 ```
 
-The MVP is based on a finite state machine model:
+The current behavioral model is based on a finite state machine:
 
 ```text
 State + Event -> Transition -> Next State
 ```
 
-The primary goal of the MVP is to build a cohesive, deterministic, and technology-independent validation engine that operates on domain concepts and is agnostic to how observed events were produced.
+The project direction is to build a robust, deterministic, and technology-independent behavioral specification and validation tool. The implementation is not constrained to an initial MVP feature set.
+
+Existing references to MVP scope or deferred capabilities may be outdated. Do not treat them as hard product boundaries unless they are reaffirmed by a current requirement or architectural decision. This direction does not define unspecified feature semantics: new capabilities still require concrete requirements, domain decisions where applicable, tests, and synchronized documentation.
 
 External technologies such as HTTP, message brokers, logs, databases, observability systems, or distributed tracing may eventually provide data to VeyraSpec, but they are **not part of the core validation engine**.
 
@@ -56,8 +58,9 @@ Different project documents have different responsibilities:
 
 4. `README.md`
 
-   * Describes the project publicly and provides an overview of its purpose and usage.
-   * It should reflect the domain and architecture but is not the authority for internal architectural decisions.
+    * Describes the product's purpose, intended scope, and usage.
+    * It is the best available overview of product direction, but its MVP wording may be stale and must not reinstate MVP-only restrictions.
+    * It is not the authority for domain semantics or internal architectural decisions.
 
 When these documents appear to conflict, stop and identify the inconsistency instead of silently choosing an interpretation.
 
@@ -77,9 +80,9 @@ If the requested change intentionally changes established behavior, update the r
 
 ---
 
-## 3. MVP Scope
+## 3. Product Scope and Architecture
 
-The MVP focuses on deterministic validation of an ordered `Trace` against a `Specification` based on a finite state machine.
+VeyraSpec is intended to become a robust tool for defining expected behavior and validating observed behavior. The finite state machine remains the documented foundation, but previous MVP exclusions do not by themselves prohibit broader capabilities.
 
 The essential flow is:
 
@@ -109,7 +112,7 @@ It must:
 * produce a structured validation result;
 * preserve useful diagnostic context for violations.
 
-The Validation Engine must **not**:
+The Validation Engine must remain independent of input and infrastructure concerns. It must **not**:
 
 * read files;
 * parse YAML;
@@ -122,9 +125,9 @@ The Validation Engine must **not**:
 
 Those responsibilities belong outside the domain engine.
 
-### MVP validation model
+### Current validation foundation
 
-The MVP assumes:
+The currently documented validation foundation includes:
 
 * a defined initial `State`;
 * a finite set of `State`s;
@@ -133,23 +136,9 @@ The MVP assumes:
 * an ordered `Trace`;
 * sequential event processing;
 * deterministic validation;
-* identification of the first meaningful divergence.
+* identification of meaningful divergences, including the first divergence.
 
-The following are intentionally outside the MVP unless explicitly introduced through a documented decision:
-
-* distributed execution semantics;
-* asynchronous ordering;
-* concurrent event processing;
-* correlation identifiers;
-* temporal constraints;
-* guards and conditions;
-* complex Action semantics;
-* message broker integration;
-* OpenTelemetry integration;
-* database persistence;
-* external observability infrastructure;
-* multiple execution correlation;
-* additional external specification formats.
+These describe the current foundation, not a ceiling on the product. Distributed or asynchronous execution, concurrency, correlation, temporal constraints, richer Action semantics, integrations, persistence, and additional external formats are not automatically out of scope because earlier documents deferred them. Introduce them only in response to concrete requirements, with their domain semantics, architectural boundaries, tests, and documentation made explicit.
 
 ---
 
@@ -321,7 +310,7 @@ The formal definition of the expected behavior of a system.
 
 A Specification defines the behavioral model used during validation.
 
-For the MVP, it includes at least:
+It includes at least:
 
 * an initial `State`;
 * `State`s;
@@ -353,7 +342,7 @@ Event  = something that happened
 Action = something the system performs
 ```
 
-The exact relationship between `Action`, `Transition`, and validation is intentionally not fully defined for the MVP.
+The exact relationship between `Action`, `Transition`, and validation is not fully defined. Establish the required semantics before implementing Action behavior.
 
 Do not introduce complex Action semantics without an explicit domain decision.
 
@@ -361,7 +350,7 @@ Do not introduce complex Action semantics without an explicit domain decision.
 
 A valid movement from one `State` to another in response to an `Event`.
 
-For the MVP:
+The current transition foundation is:
 
 ```text
 Current State + Event -> Next State
@@ -377,7 +366,7 @@ A Transition defines:
 
 An ordered sequence of observed `Event`s recorded during an execution.
 
-For the MVP:
+The current trace foundation is:
 
 ```text
 Trace = [Event1, Event2, Event3, ...]
@@ -555,7 +544,7 @@ Architecture must serve the domain, not the other way around.
 
 ## 9. External Formats
 
-The MVP uses YAML as the primary external format for `Specification`.
+The README identifies YAML as the intended primary external format for `Specification`; ADR 0002 is still marked Proposed. Confirm and record the format decision before implementing a specification adapter.
 
 YAML is an adapter concern.
 
@@ -640,7 +629,7 @@ AI agents should **not**:
 * add dependencies merely for convenience;
 * assume future requirements;
 * convert every possible concept into an interface;
-* introduce distributed-system concepts into the MVP without explicit direction.
+* reject distributed-system concepts solely because older documents deferred them; require a concrete direction and explicit domain semantics before implementing them.
 
 ---
 
