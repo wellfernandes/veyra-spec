@@ -238,6 +238,26 @@ func TestNewSpecification_AllowsRepeatedNamesAndUnusedDefinitions(t *testing.T) 
 	}
 }
 
+func TestNewSpecification_DistinguishesTransitionPairsWithEmbeddedSeparators(t *testing.T) {
+	def := validSpecificationDefinition()
+	def.States = append(def.States,
+		State{ID: "state\x00part", Name: "State with separator"},
+		State{ID: "state", Name: "State"},
+	)
+	def.Events = append(def.Events,
+		Event{ID: "event", Name: "Event"},
+		Event{ID: "part\x00event", Name: "Event with separator"},
+	)
+	def.Transitions = append(def.Transitions,
+		Transition{ID: "transition-one", From: "state\x00part", Event: "event", To: "approved"},
+		Transition{ID: "transition-two", From: "state", Event: "part\x00event", To: "rejected"},
+	)
+
+	if _, err := NewSpecification(def); err != nil {
+		t.Fatalf("NewSpecification() returned unexpected error: %v", err)
+	}
+}
+
 func TestNewSpecification_ReturnedSlicesDoNotMutateSpecification(t *testing.T) {
 	spec, err := NewSpecification(validSpecificationDefinition())
 	if err != nil {

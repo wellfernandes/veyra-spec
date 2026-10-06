@@ -103,7 +103,11 @@ func NewSpecification(def SpecificationDefinition) (Specification, error) {
 	}
 
 	transitionIDs := make(map[TransitionID]struct{}, len(def.Transitions))
-	transitionPairs := make(map[string]struct{}, len(def.Transitions))
+	type transitionKey struct {
+		from  StateID
+		event EventID
+	}
+	transitionPairs := make(map[transitionKey]struct{}, len(def.Transitions))
 
 	for i, transition := range def.Transitions {
 		if strings.TrimSpace(string(transition.ID)) == "" {
@@ -136,9 +140,7 @@ func NewSpecification(def SpecificationDefinition) (Specification, error) {
 					transition.ID, transition.Event))
 		}
 
-		// The pair key is unambiguous because IDs cannot contain the
-		// separator used here in the validated model.
-		pair := string(transition.From) + "\x00" + string(transition.Event)
+		pair := transitionKey{from: transition.From, event: transition.Event}
 		if _, exists := transitionPairs[pair]; exists {
 			validationErrors = append(validationErrors,
 				fmt.Errorf("multiple transitions defined for state %q and event %q",
