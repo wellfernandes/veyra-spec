@@ -65,7 +65,9 @@ Expected events:
 
 When validating a sequential Trace, the first point at which the observed execution can no longer follow the Specification is particularly important.
 
-The Validation Engine should preserve the context necessary to identify this first meaningful divergence.
+Validation stops at this first divergence because the Specification defines no valid next State for the observed Event. Events after the divergence are not evaluated.
+
+The Validation Engine should preserve the context necessary to identify this first meaningful divergence. Trace positions are one-based.
 
 This allows VeyraSpec to explain not only that the execution is invalid, but **where and why it became invalid**.
 

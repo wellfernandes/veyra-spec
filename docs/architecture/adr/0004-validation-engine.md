@@ -55,7 +55,7 @@ For each observed event, the engine will conceptually:
 4. If a valid transition exists, move to the next state.
 5. If no valid transition exists, create a structured `Violation`.
 6. Preserve the execution context required to explain the divergence.
-7. Continue or terminate according to the validation policy defined by the domain.
+7. Terminate validation at the first divergence because the Specification defines no next state for the observed event.
 8. Produce a structured validation result.
 
 ## Responsibilities
@@ -119,18 +119,10 @@ The exact structure of the result remains subject to domain refinement.
 * Application and adapter layers must coordinate loading and normalization.
 * Additional validation may be required when constructing domain objects from external representations.
 
-## MVP Scope
+## Current Validation Contract
 
-The MVP will validate an ordered Trace against a finite state machine-based Specification.
+Validation processes an ordered Trace against the finite state machine defined by a Specification. When an observed event has no valid Transition from the current State, validation stops and reports that first divergence. Events after that point are not evaluated because the Specification provides no valid state from which to continue.
 
-The initial validation model assumes sequential event processing.
+The result preserves the State at the divergence, the observed Event, the expected Events, the trace position, and the valid Transition path leading to the divergence.
 
-Advanced concerns such as:
-
-* parallel execution;
-* asynchronous event ordering;
-* temporal constraints;
-* distributed execution semantics;
-* correlation between multiple traces;
-
-are outside the MVP and should only be introduced through explicit domain decisions.
+This contract covers sequential FSM validation. Broader execution models require defined requirements and domain semantics; earlier MVP deferrals are not permanent exclusions.
