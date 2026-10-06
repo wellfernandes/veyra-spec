@@ -1,6 +1,13 @@
 package validation
 
-import "github.com/wellfernandes/veyra-spec/internal/domain"
+import (
+	"errors"
+
+	"github.com/wellfernandes/veyra-spec/internal/domain"
+)
+
+// ErrUninitializedSpecification is returned when Validate receives a zero-value Specification.
+var ErrUninitializedSpecification = errors.New("validation requires a Specification constructed with domain.NewSpecification")
 
 // Result describes the outcome of validating a Trace against a Specification.
 type Result struct {
@@ -14,7 +21,11 @@ func (r Result) Valid() bool {
 }
 
 // Validate evaluates the Trace in order and stops at the first missing transition.
-func Validate(specification domain.Specification, trace domain.Trace) Result {
+func Validate(specification domain.Specification, trace domain.Trace) (Result, error) {
+	if specification.ID() == "" {
+		return Result{}, ErrUninitializedSpecification
+	}
+
 	currentState := specification.InitialState()
 	transitionsByState := make(map[domain.StateID][]domain.Transition)
 	eventsByID := make(map[domain.EventID]domain.Event)
@@ -53,7 +64,7 @@ func Validate(specification domain.Specification, trace domain.Trace) Result {
 					ExpectedEvents: expectedEvents,
 					Path:           append([]domain.Transition(nil), path...),
 				},
-			}
+			}, nil
 		}
 
 		transition := transitions[matchedTransition]
@@ -61,5 +72,5 @@ func Validate(specification domain.Specification, trace domain.Trace) Result {
 		currentState = transition.To
 	}
 
-	return Result{FinalState: currentState}
+	return Result{FinalState: currentState}, nil
 }

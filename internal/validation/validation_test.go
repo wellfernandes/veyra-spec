@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/wellfernandes/veyra-spec/internal/domain"
@@ -38,12 +39,15 @@ func paymentSpecification(t *testing.T) domain.Specification {
 }
 
 func TestValidate_ValidTrace(t *testing.T) {
-	result := Validate(paymentSpecification(t), domain.Trace{
+	result, err := Validate(paymentSpecification(t), domain.Trace{
 		ObservedEvents: []domain.ObservedEvent{
 			{EventID: "payment_requested"},
 			{EventID: "payment_approved"},
 		},
 	})
+	if err != nil {
+		t.Fatalf("Validate() returned unexpected error: %v", err)
+	}
 
 	if !result.Valid() {
 		t.Fatalf("Valid() = false, violation = %#v", result.Violation)
@@ -54,7 +58,10 @@ func TestValidate_ValidTrace(t *testing.T) {
 }
 
 func TestValidate_EmptyTraceEndsAtInitialState(t *testing.T) {
-	result := Validate(paymentSpecification(t), domain.Trace{})
+	result, err := Validate(paymentSpecification(t), domain.Trace{})
+	if err != nil {
+		t.Fatalf("Validate() returned unexpected error: %v", err)
+	}
 
 	if !result.Valid() {
 		t.Fatalf("Valid() = false, violation = %#v", result.Violation)
@@ -65,13 +72,16 @@ func TestValidate_EmptyTraceEndsAtInitialState(t *testing.T) {
 }
 
 func TestValidate_ReportsFirstDivergenceWithContext(t *testing.T) {
-	result := Validate(paymentSpecification(t), domain.Trace{
+	result, err := Validate(paymentSpecification(t), domain.Trace{
 		ObservedEvents: []domain.ObservedEvent{
 			{EventID: "payment_requested"},
 			{EventID: "payment_cancelled"},
 			{EventID: "payment_approved"},
 		},
 	})
+	if err != nil {
+		t.Fatalf("Validate() returned unexpected error: %v", err)
+	}
 
 	if result.Valid() {
 		t.Fatal("Valid() = true, want a violation")
@@ -104,5 +114,12 @@ func TestValidate_ReportsFirstDivergenceWithContext(t *testing.T) {
 	}
 	if got, want := violation.Path[0].ID, domain.TransitionID("start-payment"); got != want {
 		t.Errorf("Path[0].ID = %q, want %q", got, want)
+	}
+}
+
+func TestValidate_RejectsUninitializedSpecification(t *testing.T) {
+	_, err := Validate(domain.Specification{}, domain.Trace{})
+	if !errors.Is(err, ErrUninitializedSpecification) {
+		t.Fatalf("Validate() error = %v, want %v", err, ErrUninitializedSpecification)
 	}
 }
