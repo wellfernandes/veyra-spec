@@ -4,7 +4,7 @@
 
 A `Transition` defines a valid movement from one `State` to another in response to an `Event`.
 
-For the MVP, the fundamental model is:
+The current fundamental model is:
 
 ```text
 Current State + Event -> Next State
@@ -61,9 +61,9 @@ Current State + Observed Event
         Next State         Violation
 ```
 
-## MVP Scope
+## Current Model
 
-For the MVP, a Transition is defined by:
+The current Transition is defined by:
 
 ```text
 from State
@@ -71,6 +71,6 @@ from State
 -> to State
 ```
 
-Conditions, guards, Actions, temporal constraints, and other transition semantics are intentionally outside the initial model.
+Conditions, guards, Actions, temporal constraints, and other transition semantics are not yet defined in the current model.
 
-Those concepts may be introduced later through explicit domain decisions.
+Define their semantics through explicit domain decisions before implementation; earlier MVP deferrals are not permanent exclusions.
