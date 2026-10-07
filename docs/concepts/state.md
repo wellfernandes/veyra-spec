@@ -56,8 +56,8 @@ initial_state: pending
 
 The validation process starts from this State and follows the Transitions defined by the Specification as Events are processed.
 
-## MVP Scope
+## Current Model
 
-The MVP treats the behavioral model as a finite set of States connected by valid Transitions.
+The current behavioral model treats a Specification as a finite set of States connected by valid Transitions.
 
-Future versions may introduce richer state semantics if required by the domain.
+Richer state semantics may be introduced when required by the domain and explicitly defined.
