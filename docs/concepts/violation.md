@@ -71,6 +71,12 @@ The Validation Engine should preserve the context necessary to identify this fir
 
 This allows VeyraSpec to explain not only that the execution is invalid, but **where and why it became invalid**.
 
+## Completion Violation
+
+When a Trace is marked complete and the Specification defines accepted final States, ending in any other State is a completion violation. This differs from an event violation: every observed Event may follow a valid Transition, but the completed execution did not reach an accepted final State.
+
+A completion violation records the State reached, the expected final States, and the valid Transition path. It has no observed Event or trace position because the divergence is detected at the end of the Trace.
+
 ## Validation Result
 
 A Violation is part of the structured result produced by validation.
@@ -83,8 +89,8 @@ true / false
 
 Instead, it should preserve the diagnostic information required to understand the behavioral divergence.
 
-## MVP Scope
+## Current Validation Foundation
 
-The MVP focuses on violations caused by an observed Event for which no valid Transition exists from the current State.
+The current validation foundation detects invalid observed Events and complete Traces that fail an explicitly defined final-State requirement.
 
-Additional violation types may be introduced later as the behavioral model becomes more expressive.
+Additional violation types may be introduced when their domain semantics are defined.
