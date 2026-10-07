@@ -41,8 +41,8 @@ An Event and a State represent different concepts:
 
 An Event is therefore not itself a State.
 
-## MVP Scope
+## Current Model
 
-For the MVP, Events are processed as an ordered sequence within a `Trace`.
+Events are processed as an ordered sequence within a `Trace` by the current validator.
 
-More advanced event semantics, such as concurrency, asynchronous ordering, timestamps, correlation identifiers, or distributed event relationships, are outside the initial domain model.
+Concurrency, asynchronous ordering, timestamps, correlation identifiers, and distributed event relationships require explicit domain semantics before they are represented in the model.
