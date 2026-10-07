@@ -8,11 +8,13 @@ A Trace represents:
 
 > **What actually happened.**
 
-For the MVP, the fundamental representation is an ordered sequence:
+The fundamental representation is an ordered sequence:
 
 ```text
 Trace = [Event1, Event2, Event3, ...]
 ```
+
+A Trace also records whether its observation is known to be partial, complete, or of unknown completeness. Unknown is the zero value so sources that cannot establish an observation boundary do not accidentally claim that an execution is complete.
 
 ## Purpose
 
@@ -67,11 +69,13 @@ Trace = observed behavior
 
 Validation compares the two.
 
-## MVP Scope
+## Trace Completeness
 
-The MVP assumes that Events in a Trace have a meaningful order and are processed sequentially.
+Events in a Trace have a meaningful order and are processed sequentially. A partial Trace describes an observed prefix; a complete Trace describes the complete execution being validated; unknown completeness means the source cannot tell whether more Events exist.
 
-Concerns such as:
+Validation always checks whether observed Events follow valid Transitions. For a partial Trace, reaching the end of the observed Events means the execution is still in progress. For unknown completeness, validation reports that completion cannot be determined. A complete Trace is checked against the Specification's accepted final States when they are defined.
+
+Additional concerns such as:
 
 * concurrent events;
 * asynchronous ordering;
@@ -80,6 +84,4 @@ Concerns such as:
 * distributed traces;
 * multiple related executions;
 
-are outside the initial Trace model.
-
-They may be introduced later when their domain semantics are clearly defined.
+require explicit domain semantics before being added to the Trace model.
