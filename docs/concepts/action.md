@@ -29,10 +29,10 @@ send_notification
 
 An Event may participate in a Transition, while an Action represents an operation performed by the system.
 
-## MVP Scope
+## Current Semantics
 
 The distinction between Events and Actions is part of the domain vocabulary.
 
-However, the exact relationship between `Action`, `Transition`, and validation is intentionally not fully defined for the MVP.
+The exact relationship between `Action`, `Transition`, and validation is not yet defined.
 
-Actions should not introduce additional complexity into the initial validation model until their semantics are clearly established.
+Define the required Action semantics before implementing them. Their earlier deferral does not make Action behavior permanently out of scope.
