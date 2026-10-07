@@ -22,6 +22,8 @@ A `Specification` defines the expected behavior of a system.
 
 It describes the states and transitions that are considered valid within a behavioral model.
 
+A Specification may define accepted final States for complete Traces. Without them, it defines no completion requirement.
+
 A Specification represents **what should happen**.
 
 See [specification.md](specification.md).
@@ -91,7 +93,7 @@ The distinction between `Event` and `Action` is intentional:
 * an Event represents something that happened or was observed;
 * an Action represents something the system performs.
 
-The exact relationship between Actions and Transitions is not fully defined for the MVP and may be refined as the domain evolves.
+The exact relationship between Actions and Transitions is not yet defined and requires an explicit domain decision before implementation.
 
 See [action.md](action.md).
 
@@ -100,6 +102,8 @@ See [action.md](action.md).
 A `Trace` represents the observed execution of a system as an ordered sequence of events.
 
 A Trace represents **what actually happened**.
+
+It also records whether the observation is known to be partial, complete, or of unknown completeness. This distinguishes a consistent observed prefix from a completed execution.
 
 The source of the Trace is intentionally outside the domain model. It may eventually originate from files, tests, logs, APIs, messaging systems, or distributed tracing systems.
 
@@ -129,7 +133,7 @@ The exact structure of `Execution` is intentionally subject to domain refinement
 
 The validation process determines whether the observed sequence of events can be followed through the behavioral model and identifies the first meaningful divergence when the execution is invalid.
 
-Validation must produce structured information rather than only a boolean result.
+Validation reports whether observed Events are consistent and separately reports what can be concluded about execution completion. It must produce structured information rather than only a boolean result.
 
 ### Violation
 
@@ -187,9 +191,9 @@ Specification + Trace
           +---- violations
 ```
 
-## MVP Domain Boundary
+## Current Model Boundary
 
-For the MVP, the essential behavioral model is:
+The current behavioral foundation is:
 
 ```text
 Specification
@@ -207,9 +211,9 @@ Violation
     └── describes behavioral divergence
 ```
 
-Actions, conditions, correlation identifiers, temporal constraints, parallel execution, asynchronous behavior, and distributed execution semantics are intentionally not required to define the MVP core model.
+Actions, conditions, correlation identifiers, temporal constraints, parallel execution, asynchronous behavior, and distributed execution semantics do not yet have complete domain definitions in the current model.
 
-These concepts may be introduced later when their semantics are sufficiently defined.
+They are not prohibited by earlier MVP scope statements. Introduce them when concrete requirements and semantics are defined, with corresponding tests and documentation.
 
 ## Design Principles
 
@@ -228,4 +232,4 @@ The domain model follows these principles:
    The domain must not depend on how a Trace was collected.
 
 5. **Incremental evolution**
-   Future capabilities should extend the model without unnecessarily coupling the MVP to infrastructure concerns.
+    New capabilities should extend the model without unnecessarily coupling domain behavior to infrastructure concerns.
