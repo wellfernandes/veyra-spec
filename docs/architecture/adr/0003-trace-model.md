@@ -52,11 +52,11 @@ The same principle applies to `Event`: external event representations must be no
 * Different trace sources may require normalization or transformation before they can be validated.
 * The internal Trace model must be carefully designed to avoid leaking source-specific concepts into the domain.
 
-## MVP Scope
+## Current Trace Foundation
 
-The MVP will use an ordered sequence of events as its fundamental Trace representation.
+The current Trace foundation is an ordered sequence of observed Events with explicit completeness metadata.
 
-Concerns such as:
+Additional concerns such as:
 
 * correlation identifiers;
 * distributed traces;
@@ -65,4 +65,4 @@ Concerns such as:
 * event timestamps;
 * message metadata;
 
-may be introduced later when their domain semantics are clearly defined and required by the project.
+require concrete requirements and domain semantics. Earlier MVP deferrals are not permanent exclusions.
