@@ -31,7 +31,7 @@ The domain will contain the following core concepts:
 * `Trace`
 * `Violation`
 
-`Action` is also recognized as a domain concept representing an operation performed by the system. However, its exact relationship with transitions and validation is intentionally not fully defined for the MVP.
+`Action` is also recognized as a domain concept representing an operation performed by the system. Its exact relationship with transitions and validation requires a separate domain decision before implementation.
 
 The domain model is documented separately in [Domain Model](../../concepts/domain-model.md).
 
