@@ -19,7 +19,7 @@ The external format must not impose dependencies on the core validation engine.
 
 ## Decision
 
-For the MVP, VeyraSpec will use **YAML as the primary external format for Specifications**.
+YAML is proposed as the initial external format for Specifications. This ADR remains Proposed, so the format decision must be accepted before implementing the adapter.
 
 YAML is an adapter concern. The validation engine will operate exclusively on internal domain structures and will not depend directly on YAML types or parsing libraries.
 
@@ -38,7 +38,7 @@ Domain Specification
 Validation Engine
 ```
 
-The YAML representation may evolve during the MVP as the domain model and specification authoring experience become better understood.
+The YAML representation may evolve as the domain model and specification authoring experience become better understood.
 
 ## Consequences
 
@@ -57,7 +57,7 @@ The YAML representation may evolve during the MVP as the domain model and specif
 
 ## Notes
 
-This decision applies to the MVP only.
+This proposal concerns the initial Specification adapter and does not establish YAML as the only supported format.
 
 The architecture must not assume that YAML is the definitive or only Specification format.
 

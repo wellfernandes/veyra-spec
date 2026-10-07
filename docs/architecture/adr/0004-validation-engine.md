@@ -92,16 +92,17 @@ The result must provide structured information rather than only a boolean.
 
 At minimum, the model should be capable of representing:
 
-* whether the execution is valid;
-* the final state reached when applicable;
-* detected violations;
+* whether the observed Events are consistent with the Specification;
+* the State reached at the end of the observed Trace;
+* whether completion is unknown, in progress, not evaluated, satisfied, or failed;
+* event and completion violations;
 * trace position of a violation;
 * current state at the point of divergence;
 * observed event;
 * expected events or transitions;
 * execution context required for diagnosis.
 
-The exact structure of the result remains subject to domain refinement.
+An incomplete or unknown Trace can be consistent without being a completed execution. Completion is evaluated only when the Trace is complete and the Specification defines accepted final States. When no final States are defined, the engine does not infer a completion requirement.
 
 ## Consequences
 
@@ -123,6 +124,6 @@ The exact structure of the result remains subject to domain refinement.
 
 Validation processes an ordered Trace against the finite state machine defined by a Specification. When an observed event has no valid Transition from the current State, validation stops and reports that first divergence. Events after that point are not evaluated because the Specification provides no valid state from which to continue.
 
-The result preserves the State at the divergence, the observed Event, the expected Events, the trace position, and the valid Transition path leading to the divergence.
+The result distinguishes event consistency from execution completion. It preserves the current State, event-violation context, completion status, and, when completion fails, the expected final States and valid Transition path.
 
 This contract covers sequential FSM validation. Broader execution models require defined requirements and domain semantics; earlier MVP deferrals are not permanent exclusions.

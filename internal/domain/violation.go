@@ -8,3 +8,10 @@ type Violation struct {
 	ExpectedEvents []Event
 	Path           []Transition
 }
+
+// CompletionViolation describes a complete Trace that ends outside the accepted final states.
+type CompletionViolation struct {
+	CurrentState        StateID
+	ExpectedFinalStates []StateID
+	Path                []Transition
+}

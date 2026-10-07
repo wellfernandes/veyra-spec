@@ -16,6 +16,7 @@ type SpecificationDefinition struct {
 	Description  string
 	InitialState StateID
 	States       []State
+	FinalStates  []StateID
 	Events       []Event
 	Transitions  []Transition
 }
@@ -46,6 +47,7 @@ type Specification struct {
 	description  string
 	initialState StateID
 	states       []State
+	finalStates  []StateID
 	events       []Event
 	transitions  []Transition
 }
@@ -83,6 +85,28 @@ func NewSpecification(def SpecificationDefinition) (Specification, error) {
 	} else if _, exists := statesByID[def.InitialState]; !exists {
 		validationErrors = append(validationErrors,
 			fmt.Errorf("initial state %q does not reference an existing state", def.InitialState))
+	}
+
+	finalStatesByID := make(map[StateID]struct{}, len(def.FinalStates))
+	for i, finalState := range def.FinalStates {
+		if strings.TrimSpace(string(finalState)) == "" {
+			validationErrors = append(validationErrors,
+				fmt.Errorf("final state at index %d has an empty ID", i))
+			continue
+		}
+
+		if _, exists := statesByID[finalState]; !exists {
+			validationErrors = append(validationErrors,
+				fmt.Errorf("final state %q does not reference an existing state", finalState))
+		}
+
+		if _, exists := finalStatesByID[finalState]; exists {
+			validationErrors = append(validationErrors,
+				fmt.Errorf("duplicate final state ID %q", finalState))
+			continue
+		}
+
+		finalStatesByID[finalState] = struct{}{}
 	}
 
 	eventsByID := make(map[EventID]struct{}, len(def.Events))
@@ -162,6 +186,7 @@ func NewSpecification(def SpecificationDefinition) (Specification, error) {
 		description:  def.Description,
 		initialState: def.InitialState,
 		states:       append([]State(nil), def.States...),
+		finalStates:  append([]StateID(nil), def.FinalStates...),
 		events:       append([]Event(nil), def.Events...),
 		transitions:  append([]Transition(nil), def.Transitions...),
 	}, nil
@@ -190,6 +215,11 @@ func (s Specification) InitialState() StateID {
 // States returns a copy of the specification's states.
 func (s Specification) States() []State {
 	return append([]State(nil), s.states...)
+}
+
+// FinalStates returns a copy of the specification's accepted completion states.
+func (s Specification) FinalStates() []StateID {
+	return append([]StateID(nil), s.finalStates...)
 }
 
 // Events returns a copy of the specification's events.

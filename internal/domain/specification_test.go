@@ -12,6 +12,7 @@ func validSpecificationDefinition() SpecificationDefinition {
 		Name:         "Payment Flow",
 		Description:  "Behavioral model for a payment process.",
 		InitialState: "pending",
+		FinalStates:  []StateID{"approved", "rejected"},
 		States: []State{
 			{ID: "pending", Name: "Pending"},
 			{ID: "approved", Name: "Approved"},
@@ -125,6 +126,27 @@ func TestNewSpecification_RejectsInvalidDefinitions(t *testing.T) {
 				def.InitialState = "unknown"
 			},
 			wantInError: `initial state "unknown" does not reference an existing state`,
+		},
+		{
+			name: "empty final state ID",
+			mutate: func(def *SpecificationDefinition) {
+				def.FinalStates[0] = " "
+			},
+			wantInError: "final state at index 0 has an empty ID",
+		},
+		{
+			name: "unknown final state",
+			mutate: func(def *SpecificationDefinition) {
+				def.FinalStates[0] = "unknown"
+			},
+			wantInError: `final state "unknown" does not reference an existing state`,
+		},
+		{
+			name: "duplicate final state",
+			mutate: func(def *SpecificationDefinition) {
+				def.FinalStates = append(def.FinalStates, def.FinalStates[0])
+			},
+			wantInError: `duplicate final state ID "approved"`,
 		},
 		{
 			name: "empty event ID",
@@ -265,15 +287,20 @@ func TestNewSpecification_ReturnedSlicesDoNotMutateSpecification(t *testing.T) {
 	}
 
 	states := spec.States()
+	finalStates := spec.FinalStates()
 	events := spec.Events()
 	transitions := spec.Transitions()
 
 	states[0].Name = "Changed State"
+	finalStates[0] = "changed-final-state"
 	events[0].Name = "Changed Event"
 	transitions[0].To = "changed-target"
 
 	if got, want := spec.States()[0].Name, "Pending"; got != want {
 		t.Errorf("state name changed through returned slice: got %q, want %q", got, want)
+	}
+	if got, want := spec.FinalStates()[0], StateID("approved"); got != want {
+		t.Errorf("final state changed through returned slice: got %q, want %q", got, want)
 	}
 
 	if got, want := spec.Events()[0].Name, "Payment Approved"; got != want {

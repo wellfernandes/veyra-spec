@@ -14,12 +14,14 @@ A Specification represents:
 
 The Specification is the behavioral source of truth used by the Validation Engine.
 
-For the MVP, a Specification defines at least:
+A Specification defines at least:
 
 * an initial State;
 * a set of States;
 * Events;
 * valid Transitions.
+
+A Specification may also define one or more accepted final States. When it does, a complete Trace must end in one of those States to satisfy the completion requirement. A Specification without final States defines no completion requirement, which supports ongoing behaviors that have no natural terminal State.
 
 For example:
 
@@ -66,9 +68,9 @@ What actually happened
 
 Validation compares the two.
 
-## MVP Scope
+## Current Behavioral Foundation
 
-The MVP focuses on the following Specification concepts:
+The current Specification model includes:
 
 ```text
 Specification
@@ -78,7 +80,7 @@ Specification
 └── Transitions
 ```
 
-Concepts such as:
+Additional concepts such as:
 
 * Actions;
 * conditions;
@@ -88,6 +90,6 @@ Concepts such as:
 * temporal constraints;
 * parallel behavior;
 
-may be introduced in future versions when their semantics are explicitly defined.
+may be introduced when their semantics are explicitly defined.
 
-These concepts should not be assumed to be part of the MVP merely because they may eventually be useful.
+These concepts should not be introduced without requirements and explicit semantics merely because they may eventually be useful.

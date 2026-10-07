@@ -164,7 +164,7 @@ but to explain **where and why the execution diverged from the expected behavior
 
 ## Core Domain Model
 
-The MVP is built around a small set of behavioral concepts:
+VeyraSpec's behavioral model is built around:
 
 ```text
 Specification
@@ -297,36 +297,13 @@ The distinction is intentional:
 
 > **Concepts explain what the system means. ADRs explain why architectural decisions were made.**
 
-## MVP Scope
+## Validation Model
 
-The initial MVP focuses on validating a sequential Trace against a finite state machine-based Specification.
+The Validation Engine checks each observed Event against the current State and follows matching Transitions. It reports the first event that cannot follow the Specification, including the current State, expected Events, trace position, and valid path leading to the divergence.
 
-The core model includes:
+Trace completeness is explicit. A partial Trace can be consistent while the execution remains in progress. Unknown completeness means the source cannot tell whether more Events exist. A complete Trace is checked against accepted final States when the Specification defines them; otherwise, the engine does not infer a completion requirement.
 
-* States;
-* Events;
-* Transitions;
-* Specifications;
-* Traces;
-* Validation;
-* Violations.
-
-The initial external Specification format is YAML.
-
-The core validation engine is intentionally independent of YAML and other external technologies.
-
-Advanced capabilities such as:
-
-* distributed execution;
-* asynchronous event ordering;
-* concurrent behavior;
-* correlation identifiers;
-* temporal constraints;
-* message brokers;
-* OpenTelemetry integration;
-* additional Specification formats;
-
-are outside the initial MVP and may be introduced as the domain evolves.
+The core validation engine operates on domain objects and remains independent of external formats and infrastructure. Adapters convert external Specifications and trace sources into those domain objects.
 
 ## Project Status
 
@@ -334,7 +311,7 @@ VeyraSpec is currently **in development**.
 
 The project is focused on establishing a well-defined domain model and a deterministic validation engine before introducing additional infrastructure or integrations.
 
-The architecture and domain concepts may evolve as the MVP is implemented and tested.
+The architecture and domain concepts may evolve as the project is implemented and tested.
 
 ## Project Philosophy
 
