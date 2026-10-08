@@ -241,6 +241,22 @@ Validation Engine
 
 This keeps the core validation logic deterministic, testable, and independent of the technology used to obtain the data.
 
+## Command-Line Validation
+
+Validate a Trace against a Specification with:
+
+```bash
+go run ./cmd/veyra-spec validate <specification.yaml> <trace.yaml>
+```
+
+Add `--json` after `validate` for machine-readable output:
+
+```bash
+go run ./cmd/veyra-spec validate --json <specification.yaml> <trace.yaml>
+```
+
+The command exits with status `0` when the Trace is consistent with the Specification. It exits with a nonzero status when the Trace violates a transition, fails a defined completion requirement, or cannot be loaded or validated. A consistent partial or unknown-completeness Trace is not treated as a failure merely because it is not complete.
+
 ## Documentation
 
 The project documentation is divided into two complementary areas:
