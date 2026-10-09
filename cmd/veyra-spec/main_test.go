@@ -151,9 +151,7 @@ func TestPrintValidationResultToIncludesCompletionPath(t *testing.T) {
 }
 
 func TestRunValidationExitCode(t *testing.T) {
-	specificationPath, tracePath := writeValidationInputs(t, `events:
-  - payment_approved
-`)
+	specificationPath, tracePath := writeValidationInputs(t, "events:\n  - event: payment_approved\n")
 
 	tests := []struct {
 		name       string
@@ -163,13 +161,13 @@ func TestRunValidationExitCode(t *testing.T) {
 	}{
 		{
 			name:       "valid trace",
-			trace:      "events:\n  - payment_approved\n",
+			trace:      "events:\n  - event: payment_approved\n",
 			wantCode:   0,
 			wantOutput: "Valid: true",
 		},
 		{
 			name:       "inconsistent trace",
-			trace:      "events:\n  - payment_cancelled\n",
+			trace:      "events:\n  - event: payment_cancelled\n",
 			wantCode:   1,
 			wantOutput: "Valid: false",
 		},
@@ -199,7 +197,7 @@ func TestRunValidationExitCode(t *testing.T) {
 }
 
 func TestRunValidationJSONInvalidTraceReturnsFailureCode(t *testing.T) {
-	specificationPath, tracePath := writeValidationInputs(t, "events:\n  - payment_cancelled\n")
+	specificationPath, tracePath := writeValidationInputs(t, "events:\n  - event: payment_cancelled\n")
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
