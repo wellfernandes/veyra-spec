@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/wellfernandes/veyra-spec/internal/domain"
@@ -44,6 +45,9 @@ func TestFormatValidationResultJSON_ViolationResult(t *testing.T) {
 			CurrentState:   "pending",
 			ObservedEvent:  domain.ObservedEvent{EventID: "payment_cancelled"},
 			ExpectedEvents: []domain.Event{{ID: "payment_approved"}, {ID: "payment_rejected"}},
+			Path: []domain.Transition{{
+				ID: "request-payment", From: "created", Event: "payment_requested", To: "pending",
+			}},
 		},
 	}
 
@@ -61,8 +65,88 @@ func TestFormatValidationResultJSON_ViolationResult(t *testing.T) {
 		t.Fatalf("consistent = %v, want %v", got, want)
 	}
 
-	if got := out["violation"]; got == nil {
+	violation, ok := out["violation"].(map[string]any)
+	if !ok {
 		t.Fatal("violation field is nil, want it to be present")
+	}
+	path, ok := violation["path"].([]any)
+	if !ok || len(path) != 1 {
+		t.Fatalf("violation path = %v, want one transition", violation["path"])
+	}
+	transition, ok := path[0].(map[string]any)
+	if !ok || transition["event"] != "payment_requested" {
+		t.Fatalf("violation path transition = %v, want event payment_requested", path[0])
+	}
+}
+
+func TestPrintValidationResultToIncludesViolationPath(t *testing.T) {
+	result := validation.Result{
+		Violation: &domain.Violation{
+			TracePosition: 2,
+			CurrentState:  "pending",
+			ObservedEvent: domain.ObservedEvent{EventID: "payment_cancelled"},
+			Path: []domain.Transition{{
+				ID: "request-payment", From: "created", Event: "payment_requested", To: "pending",
+			}},
+		},
+	}
+	var output bytes.Buffer
+
+	printValidationResultTo(&output, result)
+
+	if !strings.Contains(output.String(), "created --payment_requested--> pending") {
+		t.Fatalf("output = %q, want the path leading to the violation", output.String())
+	}
+}
+
+func TestFormatValidationResultJSON_IncludesCompletionPath(t *testing.T) {
+	result := validation.Result{
+		CurrentState:     "pending",
+		CompletionStatus: validation.CompletionStatusFailed,
+		CompletionViolation: &domain.CompletionViolation{
+			CurrentState:        "pending",
+			ExpectedFinalStates: []domain.StateID{"approved"},
+			Path: []domain.Transition{{
+				ID: "request-payment", From: "created", Event: "payment_requested", To: "pending",
+			}},
+		},
+	}
+
+	payload, err := formatValidationResultJSON(result)
+	if err != nil {
+		t.Fatalf("formatValidationResultJSON() returned unexpected error: %v", err)
+	}
+
+	var out map[string]any
+	if err := json.Unmarshal([]byte(payload), &out); err != nil {
+		t.Fatalf("json.Unmarshal() failed: %v", err)
+	}
+	completion, ok := out["completion_violation"].(map[string]any)
+	if !ok {
+		t.Fatalf("completion_violation = %v, want object", out["completion_violation"])
+	}
+	path, ok := completion["path"].([]any)
+	if !ok || len(path) != 1 {
+		t.Fatalf("completion path = %v, want one transition", completion["path"])
+	}
+}
+
+func TestPrintValidationResultToIncludesCompletionPath(t *testing.T) {
+	result := validation.Result{
+		CompletionViolation: &domain.CompletionViolation{
+			CurrentState:        "pending",
+			ExpectedFinalStates: []domain.StateID{"approved"},
+			Path: []domain.Transition{{
+				ID: "request-payment", From: "created", Event: "payment_requested", To: "pending",
+			}},
+		},
+	}
+	var output bytes.Buffer
+
+	printValidationResultTo(&output, result)
+
+	if !strings.Contains(output.String(), "created --payment_requested--> pending") {
+		t.Fatalf("output = %q, want the path leading to completion violation", output.String())
 	}
 }
 

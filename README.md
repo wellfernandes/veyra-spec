@@ -257,6 +257,8 @@ go run ./cmd/veyra-spec validate --json <specification.yaml> <trace.yaml>
 
 The command exits with status `0` when the Trace is consistent with the Specification. It exits with a nonzero status when the Trace violates a transition, fails a defined completion requirement, or cannot be loaded or validated. A consistent partial or unknown-completeness Trace is not treated as a failure merely because it is not complete.
 
+When validation fails, the report includes the path of valid Transitions leading to the event divergence or completion failure. JSON output represents each path as an ordered array of Transitions.
+
 ## Documentation
 
 The project documentation is divided into two complementary areas:

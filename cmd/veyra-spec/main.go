@@ -79,6 +79,7 @@ func formatValidationResultJSON(result validation.Result) (string, error) {
 			"current_state":   string(result.Violation.CurrentState),
 			"observed_event":  string(result.Violation.ObservedEvent.EventID),
 			"expected_events": eventIDsToStrings(result.Violation.ExpectedEvents),
+			"path":            transitionPathToJSON(result.Violation.Path),
 		}
 	}
 
@@ -86,6 +87,7 @@ func formatValidationResultJSON(result validation.Result) (string, error) {
 		payload["completion_violation"] = map[string]any{
 			"current_state":         string(result.CompletionViolation.CurrentState),
 			"expected_final_states": stateIDsToStrings(result.CompletionViolation.ExpectedFinalStates),
+			"path":                  transitionPathToJSON(result.CompletionViolation.Path),
 		}
 	}
 
@@ -160,12 +162,40 @@ func printValidationResultTo(w io.Writer, result validation.Result) {
 		fmt.Fprintf(w, "Current state: %s\n", result.Violation.CurrentState)
 		fmt.Fprintf(w, "Observed event: %s\n", result.Violation.ObservedEvent.EventID)
 		fmt.Fprintf(w, "Expected events: %s\n", strings.Join(eventIDsToStrings(result.Violation.ExpectedEvents), ", "))
+		printTransitionPath(w, result.Violation.Path)
 	}
 
 	if result.CompletionViolation != nil {
 		fmt.Fprintf(w, "Completion failed: current state %s is not in final states %s\n",
 			result.CompletionViolation.CurrentState,
 			strings.Join(stateIDsToStrings(result.CompletionViolation.ExpectedFinalStates), ", "))
+		printTransitionPath(w, result.CompletionViolation.Path)
+	}
+}
+
+func transitionPathToJSON(path []domain.Transition) []map[string]string {
+	result := make([]map[string]string, 0, len(path))
+	for _, transition := range path {
+		result = append(result, map[string]string{
+			"id":    string(transition.ID),
+			"from":  string(transition.From),
+			"event": string(transition.Event),
+			"to":    string(transition.To),
+		})
+	}
+	return result
+}
+
+func printTransitionPath(w io.Writer, path []domain.Transition) {
+	if len(path) == 0 {
+		fmt.Fprintln(w, "Path: (no transitions)")
+		return
+	}
+
+	fmt.Fprintln(w, "Path:")
+	for _, transition := range path {
+		fmt.Fprintf(w, "  %s --%s--> %s (%s)\n",
+			transition.From, transition.Event, transition.To, transition.ID)
 	}
 }
 

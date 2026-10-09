@@ -1,5 +1,5 @@
 module github.com/wellfernandes/veyra-spec
 
-go 1.26.4
+go 1.27.2
 
 require gopkg.in/yaml.v3 v3.0.1
