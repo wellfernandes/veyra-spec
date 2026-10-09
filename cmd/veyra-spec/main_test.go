@@ -220,20 +220,25 @@ func TestRunValidationJSONInvalidTraceReturnsFailureCode(t *testing.T) {
 func writeValidationInputs(t *testing.T, trace string) (string, string) {
 	t.Helper()
 	dir := t.TempDir()
-	specification := `id: payment-flow
-initial_state: pending
-final_states:
-  - approved
-states:
-  - id: pending
-  - id: approved
-events:
-  - payment_approved
-transitions:
-  - from: pending
-    event: payment_approved
-    to: approved
-`
+	specification := strings.Join([]string{
+		"id: payment-flow",
+		"initial_state: pending",
+		"final_states:",
+		"  - approved",
+		"states:",
+		"  - id: pending",
+		"    name: Pending",
+		"  - id: approved",
+		"    name: Approved",
+		"events:",
+		"  - id: payment_approved",
+		"    name: Payment Approved",
+		"transitions:",
+		"  - id: approve-payment",
+		"    from: pending",
+		"    event: payment_approved",
+		"    to: approved",
+	}, "\n")
 	return writeFile(t, dir, "specification.yaml", specification), writeFile(t, dir, "trace.yaml", "completeness: complete\n"+trace)
 }
 
