@@ -101,20 +101,27 @@ final_states:
   - rejected
 
 states:
-  - pending
-  - approved
-  - rejected
+  - id: pending
+    name: Pending
+  - id: approved
+    name: Approved
+  - id: rejected
+    name: Rejected
 
 events:
-  - payment_approved
-  - payment_rejected
+  - id: payment_approved
+    name: Payment Approved
+  - id: payment_rejected
+    name: Payment Rejected
 
 transitions:
-  - from: pending
+  - id: approve-payment
+    from: pending
     event: payment_approved
     to: approved
 
-  - from: pending
+  - id: reject-payment
+    from: pending
     event: payment_rejected
     to: rejected
 ```
