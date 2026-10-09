@@ -26,14 +26,22 @@ A Specification may also define one or more accepted final States. When it does,
 For example:
 
 ```yaml
+id: payment-flow
 name: payment-flow
 
 initial_state: pending
+final_states:
+  - approved
+  - rejected
 
 states:
   - pending
   - approved
   - rejected
+
+events:
+  - payment_approved
+  - payment_rejected
 
 transitions:
   - from: pending

@@ -92,14 +92,22 @@ When the execution does not follow a valid transition, VeyraSpec produces a stru
 A simple payment specification could be represented as:
 
 ```yaml
+id: payment-flow
 name: payment-flow
 
 initial_state: pending
+final_states:
+  - approved
+  - rejected
 
 states:
   - pending
   - approved
   - rejected
+
+events:
+  - payment_approved
+  - payment_rejected
 
 transitions:
   - from: pending
@@ -246,13 +254,13 @@ This keeps the core validation logic deterministic, testable, and independent of
 Validate a Trace against a Specification with:
 
 ```bash
-go run ./cmd/veyra-spec validate <specification.yaml> <trace.yaml>
+go run ./cmd/veyra-spec validate examples/payment-spec.yaml examples/payment-trace-valid.yaml
 ```
 
 Add `--json` after `validate` for machine-readable output:
 
 ```bash
-go run ./cmd/veyra-spec validate --json <specification.yaml> <trace.yaml>
+go run ./cmd/veyra-spec validate --json examples/payment-spec.yaml examples/payment-trace-valid.yaml
 ```
 
 The command exits with status `0` when the Trace is consistent with the Specification. It exits with a nonzero status when the Trace violates a transition, fails a defined completion requirement, or cannot be loaded or validated. A consistent partial or unknown-completeness Trace is not treated as a failure merely because it is not complete.
