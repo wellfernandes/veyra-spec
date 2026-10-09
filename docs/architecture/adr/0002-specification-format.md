@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -19,7 +19,18 @@ The external format must not impose dependencies on the core validation engine.
 
 ## Decision
 
-YAML is proposed as the initial external format for Specifications. This ADR remains Proposed, so the format decision must be accepted before implementing the adapter.
+YAML is the initial external format for Specifications.
+
+The canonical Specification document uses one YAML document with these fields:
+
+* `id` and `initial_state` are required scalar values.
+* `name` and `description` are optional scalar values.
+* `states` is a sequence of mappings with required `id` and `name` fields.
+* `events` is a sequence of mappings with required `id` and `name` fields.
+* `transitions` is a sequence of mappings with required `id`, `from`, `event`, and `to` fields.
+* `final_states` is an optional sequence of state IDs.
+
+Field names use the spellings shown above. Singular and camelCase aliases are not accepted. Unknown fields and values with the wrong shape are rejected rather than silently ignored. The adapter decodes this format into typed input structures and then constructs the validated domain Specification.
 
 YAML is an adapter concern. The validation engine will operate exclusively on internal domain structures and will not depend directly on YAML types or parsing libraries.
 
@@ -38,7 +49,7 @@ Domain Specification
 Validation Engine
 ```
 
-The YAML representation may evolve as the domain model and specification authoring experience become better understood.
+The external representation may evolve through a future architectural decision. Other formats may be added through separate adapters without changing the validation engine.
 
 ## Consequences
 
@@ -57,7 +68,7 @@ The YAML representation may evolve as the domain model and specification authori
 
 ## Notes
 
-This proposal concerns the initial Specification adapter and does not establish YAML as the only supported format.
+This decision concerns the initial Specification adapter and does not establish YAML as the only supported format.
 
 The architecture must not assume that YAML is the definitive or only Specification format.
 
