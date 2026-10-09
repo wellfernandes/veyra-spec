@@ -5,9 +5,8 @@ import (
 	"os"
 	"strings"
 
-	yaml "gopkg.in/yaml.v3"
-
 	"github.com/wellfernandes/veyra-spec/internal/domain"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type specificationYAML struct {

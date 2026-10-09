@@ -6,9 +6,8 @@ import (
 	"strings"
 	"time"
 
-	yaml "gopkg.in/yaml.v3"
-
 	"github.com/wellfernandes/veyra-spec/internal/domain"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type traceYAML struct {
