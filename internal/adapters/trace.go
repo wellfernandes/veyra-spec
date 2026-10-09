@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/wellfernandes/veyra-spec/internal/domain"
-	yaml "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
 )
 
 type traceYAML struct {
@@ -64,7 +64,7 @@ func parseObservedEvents(node yaml.Node) ([]domain.ObservedEvent, error) {
 		return nil, nil
 	}
 
-	items, err := parseNodeList(node)
+	items, err := parseTraceNodeList(node)
 	if err != nil {
 		return nil, err
 	}
@@ -126,4 +126,16 @@ func parseTimestamp(value string) (time.Time, error) {
 	}
 
 	return time.Time{}, fmt.Errorf("invalid timestamp %q: %w", value, err)
+}
+
+func parseTraceNodeList(node yaml.Node) ([]*yaml.Node, error) {
+	if node.Kind == 0 {
+		return nil, nil
+	}
+
+	if node.Kind != yaml.SequenceNode {
+		return nil, fmt.Errorf("expected a YAML list, received %s", node.ShortTag())
+	}
+
+	return node.Content, nil
 }
