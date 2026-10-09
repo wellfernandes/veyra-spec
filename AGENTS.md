@@ -544,7 +544,7 @@ Architecture must serve the domain, not the other way around.
 
 ## 9. External Formats
 
-The README identifies YAML as the intended primary external format for `Specification`; ADR 0002 is still marked Proposed. Confirm and record the format decision before implementing a specification adapter.
+ADR 0002 accepts YAML as the initial external format for `Specification` and defines its canonical schema. Specification adapters, tests, and examples must follow that schema. Record any future format or schema changes in ADR 0002 before implementing them.
 
 YAML is an adapter concern.
 
