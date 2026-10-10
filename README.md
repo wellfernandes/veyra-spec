@@ -256,6 +256,13 @@ Validation Engine
 
 This keeps the core validation logic deterministic, testable, and independent of the technology used to obtain the data.
 
+## Requirements and Dependencies
+
+* **Go 1.27.2 or newer** is required to build and run VeyraSpec.
+* **[`gopkg.in/yaml.v3`](https://pkg.go.dev/gopkg.in/yaml.v3) v3.0.1** parses and decodes Specification and Trace YAML in the adapters. The domain and validation engine do not depend on this library.
+
+All other dependencies are part of the Go standard library.
+
 ## Command-Line Validation
 
 Trace YAML requires an ordered `events` sequence. Each entry has a required `event` ID and may include a timestamp; `completeness` is optional and defaults to `unknown`. Timestamps are retained as metadata and do not affect validation order. See `examples/payment-trace-valid.yaml` for a complete example.
