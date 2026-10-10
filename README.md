@@ -258,6 +258,8 @@ This keeps the core validation logic deterministic, testable, and independent of
 
 ## Command-Line Validation
 
+Trace YAML requires an ordered `events` sequence. Each entry has a required `event` ID and may include a timestamp; `completeness` is optional and defaults to `unknown`. Timestamps are retained as metadata and do not affect validation order. See `examples/payment-trace-valid.yaml` for a complete example.
+
 Validate a Trace against a Specification with:
 
 ```bash

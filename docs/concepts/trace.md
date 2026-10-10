@@ -73,13 +73,15 @@ Validation compares the two.
 
 Events in a Trace have a meaningful order and are processed sequentially. A partial Trace describes an observed prefix; a complete Trace describes the complete execution being validated; unknown completeness means the source cannot tell whether more Events exist.
 
+The initial YAML adapter represents a Trace with a required `events` sequence. Each entry is an object with a required `event` ID and an optional RFC 3339 `timestamp`. The optional `completeness` field accepts `unknown`, `partial`, or `complete`; omitting it means `unknown`. The sequence order determines processing order. Timestamps are retained as metadata and do not affect validation or reorder Events. Unknown fields, scalar event entries, aliases, and multiple YAML documents are rejected.
+
 Validation always checks whether observed Events follow valid Transitions. For a partial Trace, reaching the end of the observed Events means the execution is still in progress. For unknown completeness, validation reports that completion cannot be determined. A complete Trace is checked against the Specification's accepted final States when they are defined.
 
 Additional concerns such as:
 
 * concurrent events;
 * asynchronous ordering;
-* timestamps;
+* temporal constraints;
 * correlation identifiers;
 * distributed traces;
 * multiple related executions;
