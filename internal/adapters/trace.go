@@ -1,7 +1,10 @@
 package adapters
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -11,14 +14,33 @@ import (
 )
 
 type traceYAML struct {
-	Completeness string    `yaml:"completeness"`
-	Events       yaml.Node `yaml:"events"`
+	Completeness string               `yaml:"completeness"`
+	Events       *[]observedEventYAML `yaml:"events"`
+}
+
+type observedEventYAML struct {
+	Event     string `yaml:"event"`
+	Timestamp string `yaml:"timestamp"`
 }
 
 func ParseTrace(data []byte) (domain.Trace, error) {
 	var raw traceYAML
-	if err := yaml.Unmarshal(data, &raw); err != nil {
-		return domain.Trace{}, err
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	decoder.KnownFields(true)
+	if err := decoder.Decode(&raw); err != nil {
+		return domain.Trace{}, fmt.Errorf("decode trace YAML: %w", err)
+	}
+
+	var extraDocument any
+	if err := decoder.Decode(&extraDocument); err != io.EOF {
+		if err != nil {
+			return domain.Trace{}, fmt.Errorf("decode trailing trace YAML: %w", err)
+		}
+		return domain.Trace{}, errors.New("trace YAML must contain exactly one document")
+	}
+
+	if raw.Events == nil {
+		return domain.Trace{}, errors.New("trace must define events as a YAML sequence")
 	}
 
 	completeness, err := parseTraceCompleteness(raw.Completeness)
@@ -26,7 +48,7 @@ func ParseTrace(data []byte) (domain.Trace, error) {
 		return domain.Trace{}, err
 	}
 
-	events, err := parseObservedEvents(raw.Events)
+	events, err := parseObservedEvents(*raw.Events)
 	if err != nil {
 		return domain.Trace{}, err
 	}
@@ -47,7 +69,7 @@ func LoadTrace(path string) (domain.Trace, error) {
 }
 
 func parseTraceCompleteness(value string) (domain.TraceCompleteness, error) {
-	switch strings.ToLower(strings.TrimSpace(value)) {
+	switch value {
 	case "", "unknown":
 		return domain.TraceCompletenessUnknown, nil
 	case "partial":
@@ -59,51 +81,22 @@ func parseTraceCompleteness(value string) (domain.TraceCompleteness, error) {
 	}
 }
 
-func parseObservedEvents(node yaml.Node) ([]domain.ObservedEvent, error) {
-	if node.Kind == 0 {
-		return nil, nil
-	}
-
-	items, err := parseTraceNodeList(node)
-	if err != nil {
-		return nil, err
-	}
-
+func parseObservedEvents(items []observedEventYAML) ([]domain.ObservedEvent, error) {
 	events := make([]domain.ObservedEvent, 0, len(items))
-	for _, item := range items {
-		switch item.Kind {
-		case yaml.ScalarNode:
-			events = append(events, domain.ObservedEvent{EventID: domain.EventID(item.Value)})
-		case yaml.MappingNode:
-			var observed struct {
-				Event     string `yaml:"event"`
-				ID        string `yaml:"id"`
-				Timestamp string `yaml:"timestamp"`
-			}
-			if err := item.Decode(&observed); err != nil {
-				return nil, err
-			}
-
-			id := strings.TrimSpace(observed.Event)
-			if id == "" {
-				id = strings.TrimSpace(observed.ID)
-			}
-			if id == "" {
-				return nil, fmt.Errorf("observed event is missing its event ID")
-			}
-
-			timestamp, err := parseTimestamp(observed.Timestamp)
-			if err != nil {
-				return nil, err
-			}
-
-			events = append(events, domain.ObservedEvent{
-				EventID:   domain.EventID(id),
-				Timestamp: timestamp,
-			})
-		default:
-			return nil, fmt.Errorf("unsupported observed event definition: %s", item.ShortTag())
+	for i, item := range items {
+		if strings.TrimSpace(item.Event) == "" {
+			return nil, fmt.Errorf("observed event at index %d must define an event ID", i)
 		}
+
+		timestamp, err := parseTimestamp(item.Timestamp)
+		if err != nil {
+			return nil, fmt.Errorf("observed event at index %d: %w", i, err)
+		}
+
+		events = append(events, domain.ObservedEvent{
+			EventID:   domain.EventID(item.Event),
+			Timestamp: timestamp,
+		})
 	}
 
 	return events, nil
@@ -126,16 +119,4 @@ func parseTimestamp(value string) (time.Time, error) {
 	}
 
 	return time.Time{}, fmt.Errorf("invalid timestamp %q: %w", value, err)
-}
-
-func parseTraceNodeList(node yaml.Node) ([]*yaml.Node, error) {
-	if node.Kind == 0 {
-		return nil, nil
-	}
-
-	if node.Kind != yaml.SequenceNode {
-		return nil, fmt.Errorf("expected a YAML list, received %s", node.ShortTag())
-	}
-
-	return node.Content, nil
 }
