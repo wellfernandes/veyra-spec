@@ -1,0 +1,35 @@
+id: tcp-server-handshake
+name: TCP Server Three-Way Handshake
+description: Validates the observed packet order for one incoming TCP connection.
+initial_state: LISTEN
+final_states:
+  - ESTABLISHED
+states:
+  - id: LISTEN
+    name: Listening for a connection
+  - id: SYN_RECEIVED
+    name: SYN received; waiting for SYN-ACK to be sent
+  - id: SYN_ACK_SENT
+    name: SYN-ACK sent; waiting for the final ACK
+  - id: ESTABLISHED
+    name: Connection established
+events:
+  - id: tcp_syn_received
+    name: Server received SYN
+  - id: tcp_syn_ack_sent
+    name: Server sent SYN-ACK
+  - id: tcp_ack_received
+    name: Server received final ACK
+transitions:
+  - id: receive-initial-syn
+    from: LISTEN
+    event: tcp_syn_received
+    to: SYN_RECEIVED
+  - id: send-syn-ack
+    from: SYN_RECEIVED
+    event: tcp_syn_ack_sent
+    to: SYN_ACK_SENT
+  - id: receive-final-ack
+    from: SYN_ACK_SENT
+    event: tcp_ack_received
+    to: ESTABLISHED

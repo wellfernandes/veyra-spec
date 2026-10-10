@@ -1,0 +1,6 @@
+completeness: complete
+events:
+  - event: order_submitted
+    timestamp: "2026-10-08T09:00:00Z"
+  - event: payment_cancelled
+    timestamp: "2026-10-08T09:00:03Z"
