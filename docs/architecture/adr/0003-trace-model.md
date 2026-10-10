@@ -37,6 +37,8 @@ The Validation Engine will operate only on the internal `Trace` representation.
 
 The same principle applies to `Event`: external event representations must be normalized before reaching the core domain.
 
+The initial YAML Trace adapter accepts exactly one document with a required `events` sequence. Each event is a mapping with a required `event` ID and an optional RFC 3339 `timestamp`. The optional `completeness` field accepts `unknown`, `partial`, or `complete`; when omitted, it defaults to `unknown`. Event order in the YAML sequence is authoritative. Timestamps are retained as metadata and do not reorder events or affect validation. Unknown fields, scalar event entries, aliases, and additional YAML documents are rejected.
+
 ## Consequences
 
 ### Positive
@@ -52,6 +54,8 @@ The same principle applies to `Event`: external event representations must be no
 * Different trace sources may require normalization or transformation before they can be validated.
 * The internal Trace model must be carefully designed to avoid leaking source-specific concepts into the domain.
 
+The strict YAML shape applies only to the YAML adapter; other trace sources may define their own adapters and normalization rules while producing the same internal Trace.
+
 ## Current Trace Foundation
 
 The current Trace foundation is an ordered sequence of observed Events with explicit completeness metadata.
@@ -62,7 +66,7 @@ Additional concerns such as:
 * distributed traces;
 * concurrent events;
 * asynchronous execution;
-* event timestamps;
+* temporal validation constraints;
 * message metadata;
 
 require concrete requirements and domain semantics. Earlier MVP deferrals are not permanent exclusions.
