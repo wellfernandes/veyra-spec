@@ -1,0 +1,36 @@
+id: payment-flow
+name: Payment Flow
+description: Example behavioral model for a payment process.
+initial_state: created
+final_states:
+  - approved
+  - rejected
+states:
+  - id: created
+    name: Created
+  - id: pending
+    name: Pending
+  - id: approved
+    name: Approved
+  - id: rejected
+    name: Rejected
+events:
+  - id: order_submitted
+    name: Order Submitted
+  - id: payment_approved
+    name: Payment Approved
+  - id: payment_rejected
+    name: Payment Rejected
+transitions:
+  - id: submit-order
+    from: created
+    event: order_submitted
+    to: pending
+  - id: approve-payment
+    from: pending
+    event: payment_approved
+    to: approved
+  - id: reject-payment
+    from: pending
+    event: payment_rejected
+    to: rejected

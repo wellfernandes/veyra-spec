@@ -1,0 +1,8 @@
+completeness: complete
+events:
+  - event: tcp_syn_received
+    timestamp: "2026-10-08T10:15:00Z"
+  - event: tcp_syn_ack_sent
+    timestamp: "2026-10-08T10:15:00Z"
+  - event: tcp_ack_received
+    timestamp: "2026-10-08T10:15:01Z"
