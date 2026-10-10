@@ -5,6 +5,8 @@
 ![Status: In Development](https://img.shields.io/badge/Status-In%20Development-yellow)
 ![Language: Go](https://img.shields.io/badge/Language-Go-blue)
 
+**Languages:** English | [Português do Brasil](README-PT.md)
+
 ## What is VeyraSpec?
 
 VeyraSpec is a Go-based tool for defining and validating the expected behavior of software systems.
