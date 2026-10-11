@@ -1,5 +1,7 @@
 # VeyraSpec
 
+![mocai](img/veyraspec.svg)
+
 > Model-based behavioral specification and validation for software systems.
 
 ![Status: In Development](https://img.shields.io/badge/Status-In%20Development-yellow)
