@@ -287,6 +287,50 @@ The command exits with status `0` when the Trace is consistent with the Specific
 
 When validation fails, the report includes the path of valid Transitions leading to the event divergence or completion failure. JSON output represents each path as an ordered array of Transitions.
 
+## Public Go API
+
+The module root exposes a Go-only package for constructing a Specification and validating an in-memory Trace. It does not load files, parse YAML, or provide the CLI.
+
+```go
+package example
+
+import veyra "github.com/wellfernandes/veyra-spec"
+
+func check() (bool, error) {
+	specification, err := veyra.NewSpecification(veyra.SpecificationDefinition{
+		ID:           "payment-flow",
+		InitialState: "pending",
+		States: []veyra.State{
+			{ID: "pending"},
+			{ID: "approved"},
+		},
+		Events: []veyra.Event{
+			{ID: "payment_approved"},
+		},
+		Transitions: []veyra.Transition{
+			{ID: "approve-payment", From: "pending", Event: "payment_approved", To: "approved"},
+		},
+		FinalStates: []string{"approved"},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	result, err := veyra.Validate(specification, veyra.Trace{
+		Completeness: veyra.TraceCompletenessComplete,
+		ObservedEvents: []veyra.ObservedEvent{
+			{EventID: "payment_approved"},
+		},
+	})
+	if err != nil {
+		return false, err
+	}
+	return result.Valid(), nil
+}
+```
+
+Once a release is published, add it to a consuming module with `go get github.com/wellfernandes/veyra-spec`. The public API consumer example can be run from `testdata/public-api-consumer` with `go test ./...`.
+
 ## Documentation
 
 The project documentation is divided into two complementary areas:

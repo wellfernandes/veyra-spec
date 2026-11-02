@@ -287,6 +287,50 @@ O comando termina com status `0` quando o Trace é consistente com a Specificati
 
 Quando a validação falha, o relatório inclui o caminho das transições válidas que levou à divergência do evento ou à falha de conclusão. A saída JSON representa cada caminho como um array ordenado de transições.
 
+## API pública Go
+
+O pacote Go na raiz do módulo permite construir uma Specification e validar um Trace em memória. Ele não carrega arquivos, não faz parsing de YAML e não fornece o CLI.
+
+```go
+package example
+
+import veyra "github.com/wellfernandes/veyra-spec"
+
+func check() (bool, error) {
+	specification, err := veyra.NewSpecification(veyra.SpecificationDefinition{
+		ID:           "payment-flow",
+		InitialState: "pending",
+		States: []veyra.State{
+			{ID: "pending"},
+			{ID: "approved"},
+		},
+		Events: []veyra.Event{
+			{ID: "payment_approved"},
+		},
+		Transitions: []veyra.Transition{
+			{ID: "approve-payment", From: "pending", Event: "payment_approved", To: "approved"},
+		},
+		FinalStates: []string{"approved"},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	result, err := veyra.Validate(specification, veyra.Trace{
+		Completeness: veyra.TraceCompletenessComplete,
+		ObservedEvents: []veyra.ObservedEvent{
+			{EventID: "payment_approved"},
+		},
+	})
+	if err != nil {
+		return false, err
+	}
+	return result.Valid(), nil
+}
+```
+
+Quando uma versão for publicada, adicione a dependência ao módulo consumidor com `go get github.com/wellfernandes/veyra-spec`. O exemplo de consumidor da API pública pode ser executado em `testdata/public-api-consumer` com `go test ./...`.
+
 ## Documentação
 
 A documentação do projeto está dividida em duas áreas complementares:
