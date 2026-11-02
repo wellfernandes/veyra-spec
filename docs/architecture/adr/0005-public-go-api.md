@@ -20,6 +20,8 @@ The API is Go-only. YAML parsing, file access, CLI behavior, HTTP, protocol capt
 
 The public API must preserve the current domain and validation semantics. Behavioral violations are represented in the returned result; errors are reserved for invalid input or inability to perform validation. Public error categories must be inspectable with `errors.Is` or `errors.As` and must not expose internal error types.
 
+An invalid Specification is reported as `*SpecificationError`, which matches `ErrInvalidSpecification` through `errors.Is`. Its `Problems` method returns a defensive copy of the individual structural validation messages, allowing callers to inspect aggregated errors through `errors.As` without depending on internal domain error types. The aggregate error string remains suitable for human-readable diagnostics; callers should use the sentinel and typed error instead of parsing that string.
+
 The API is pre-`v1` until its usage has been validated by an external-module example. Exported names and semantics should remain deliberately small to limit compatibility obligations.
 
 ## Consequences
@@ -34,7 +36,7 @@ The API is pre-`v1` until its usage has been validated by an external-module exa
 ### Negative
 
 * Public types and error behavior become compatibility commitments once adopted.
-* Conversion between public and internal representations introduces code that must preserve all diagnostics and defensive-copy guarantees.
+* Conversion between public and internal representations introduces code that must preserve all diagnostics and defensive-copy guarantees, including aggregated Specification problems.
 * YAML and CLI users do not gain new capabilities from this API alone.
 
 ## Validation
