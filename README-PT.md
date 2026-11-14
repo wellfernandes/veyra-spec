@@ -349,6 +349,7 @@ A documentação do projeto está dividida em duas áreas complementares:
         state.md                     0002-specification-format.md
         event.md                     0003-trace-model.md
         transition.md                0004-validation-engine.md
+                                     0005-public-go-api.md
         trace.md
         violation.md
         specification.md
@@ -382,6 +383,7 @@ O diretório `docs/architecture/adr/` registra decisões arquiteturais important
 | `0002-specification-format.md` | YAML como formato inicial de Specification     |
 | `0003-trace-model.md`          | Modelo interno de Trace independente da fonte  |
 | `0004-validation-engine.md`    | Responsabilidades e fluxo do Validation Engine |
+| `0005-public-go-api.md`        | Contrato da API Go pública e limite do pacote   |
 
 A distinção é intencional:
 
